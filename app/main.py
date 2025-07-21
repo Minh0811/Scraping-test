@@ -1,7 +1,8 @@
 import os
 from utils import clear_folder
 from scrape import OptiScraper
-from chunk import OptiChunker
+from chunker import OptiChunker
+from upload_to_openai import OptiUploader
 
 
 def main():
@@ -21,6 +22,11 @@ def main():
     # Run the chunker
     chunker = OptiChunker(MARKDOWN_DIR, CHUNKS_DIR)
     chunker.chunk_markdown_files()
+
+    uploader = OptiUploader(CHUNKS_DIR)
+    uploader.delete_all_openai_files()
+    uploader.upload_and_attach()
+    print(f"All operations completed successfully.")
 
 
 if __name__ == "__main__":

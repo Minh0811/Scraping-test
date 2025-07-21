@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 import requests
 from markdownify import markdownify as md
 
+
 class OptiScraper:
-    def __init__(self, output_dir, num_articles=40):
+    def __init__(self, output_dir, num_articles=None):
         # load variables from .env
         load_dotenv()
         self.API_URL = os.getenv("API_URL")
@@ -13,13 +14,13 @@ class OptiScraper:
         self.NUM_ARTICLES = num_articles
 
     def slugify(self, text):
-        return re.sub(r'[^a-zA-Z0-9-]+', '-', text.lower()).strip('-')
+        return re.sub(r"[^a-zA-Z0-9-]+", "-", text.lower()).strip("-")
 
     def fetch_articles(self):
         articles = []
         url = self.API_URL
 
-        while url and len(articles) < self.NUM_ARTICLES:
+        while url and (self.NUM_ARTICLES is None or len(articles) < self.NUM_ARTICLES):
             print(f"Fetching: {url}")
             r = requests.get(url)
             r.raise_for_status()
@@ -27,7 +28,7 @@ class OptiScraper:
             articles.extend(data.get("articles", []))
             url = data.get("next_page")
 
-        return articles[:self.NUM_ARTICLES]
+        return articles[: self.NUM_ARTICLES]
 
     def scrape(self):
         os.makedirs(self.OUTPUT_DIR, exist_ok=True)
