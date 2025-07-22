@@ -2,10 +2,10 @@
 .env
 .env.*
 
-app/logs/*
-!app/logs/.gitkeep
-!app/logs/chunks/.gitkeep
-!app/logs/markdowns/.gitkeep
+logs/*
+!logs/.gitkeep
+!logs/chunks/.gitkeep
+!logs/markdowns/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

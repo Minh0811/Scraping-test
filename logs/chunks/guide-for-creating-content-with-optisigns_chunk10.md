@@ -1,1 +1,0 @@
-#### Now, go explore the many different ways to bring your digital screens to life with OptiSigns apps and integrations!

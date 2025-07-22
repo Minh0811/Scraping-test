@@ -1,1 +1,0 @@
-### **That's it! You've successfully configured your operational schedule!**
