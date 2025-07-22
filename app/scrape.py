@@ -36,16 +36,15 @@ class OptiScraper:
 
     def scrape(self):
         os.makedirs(self.OUTPUT_DIR, exist_ok=True)
-        # Metadata for delta detection
         metadata_path = os.path.join(self.OUTPUT_DIR, "..", "metadata.json")
+        prev_metadata = {}
         if os.path.exists(metadata_path):
             with open(metadata_path, "r", encoding="utf-8") as f:
                 prev_metadata = json.load(f)
-        else:
-            prev_metadata = {}
 
         articles = self.fetch_articles() or []
         added, updated, skipped = 0, 0, 0
+        changed_files = []  # Track what was changed
         new_metadata = {}
 
         for art in articles:
@@ -60,16 +59,20 @@ class OptiScraper:
             last_modified = art.get("updated_at") or art.get("created_at") or ""
 
             old = prev_metadata.get(article_id)
+            needs_write = False
             if old is None:
                 added += 1
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(f"# {title}\n\n{markdown_body}")
+                needs_write = True
             elif old["hash"] != content_hash or old["last_modified"] != last_modified:
                 updated += 1
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(f"# {title}\n\n{markdown_body}")
+                needs_write = True
             else:
                 skipped += 1
+
+            if needs_write:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(f"# {title}\n\n{markdown_body}")
+                changed_files.append(filename)
 
             new_metadata[article_id] = {
                 "hash": content_hash,
@@ -78,9 +81,8 @@ class OptiScraper:
                 "filename": filename,
             }
 
-        # Save new metadata
         with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(new_metadata, f, indent=2)
 
         print(f"Added: {added}, Updated: {updated}, Skipped: {skipped}")
-        return added, updated, skipped
+        return added, updated, skipped, changed_files

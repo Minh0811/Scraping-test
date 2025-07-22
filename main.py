@@ -20,7 +20,6 @@ def setup_logging():
 def main():
     setup_logging()
     logging.info(f"==== Daily job started at {datetime.now().isoformat()} ====")
-
     try:
         added, updated, skipped, chunk_count = run_daily_job()
         logging.info(f"Added: {added}, Updated: {updated}, Skipped: {skipped}")
@@ -29,7 +28,6 @@ def main():
         logging.info(f"See logs/last_run.log for full artefact/logs.")
     except Exception as e:
         logging.error(f"❌ Daily job failed: {e}")
-
     logging.info(f"==== Job finished at {datetime.now().isoformat()} ====")
 
 
