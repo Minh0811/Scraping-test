@@ -15,7 +15,6 @@ class OptiUploader:
 
         # Uploads each chunk file to OpenAI File API for use with Assistants.
         # Returns a list of OpenAI file IDs.
-
         file_ids = []
         chunk_files = glob.glob(os.path.join(self.chunks_dir, "*.md"))
         print(f"Uploading {len(chunk_files)} chunk files from {self.chunks_dir}...")

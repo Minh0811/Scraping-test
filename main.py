@@ -1,32 +1,36 @@
-import os
-from app.utils import clear_folder
-from app.scrape import OptiScraper
-from app.chunker import OptiChunker
-from app.upload_to_openai import OptiUploader
+import logging
+from datetime import datetime
+from daily_job import run_daily_job
+
+LOGS_DIR = "logs"
+LOG_PATH = f"{LOGS_DIR}/last_run.log"
+
+
+def setup_logging():
+    import sys, os
+
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        handlers=[logging.FileHandler(LOG_PATH, mode="w"), logging.StreamHandler()],
+    )
 
 
 def main():
-    # Put the markdown files inside a logs folder and the same dir as scrape.py
-    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-    MARKDOWN_DIR = os.path.join(SCRIPT_DIR, "logs", "markdowns")
-    CHUNKS_DIR = os.path.join(SCRIPT_DIR, "logs", "chunks")
+    setup_logging()
+    logging.info(f"==== Daily job started at {datetime.now().isoformat()} ====")
 
-    # Clean previous log files
-    clear_folder(MARKDOWN_DIR)
-    clear_folder(CHUNKS_DIR)
+    try:
+        added, updated, skipped, chunk_count = run_daily_job()
+        logging.info(f"Added: {added}, Updated: {updated}, Skipped: {skipped}")
+        logging.info(f"Total chunks created: {chunk_count}")
+        logging.info("✅ Daily job completed successfully.")
+        logging.info(f"See logs/last_run.log for full artefact/logs.")
+    except Exception as e:
+        logging.error(f"❌ Daily job failed: {e}")
 
-    # Run the scraper
-    scraper = OptiScraper(MARKDOWN_DIR, num_articles=40)
-    scraper.scrape()
-
-    # Run the chunker
-    chunker = OptiChunker(MARKDOWN_DIR, CHUNKS_DIR)
-    chunker.chunk_markdown_files()
-
-    uploader = OptiUploader(CHUNKS_DIR)
-    uploader.delete_all_openai_files()
-    uploader.upload_and_attach()
-    print(f"All operations completed successfully.")
+    logging.info(f"==== Job finished at {datetime.now().isoformat()} ====")
 
 
 if __name__ == "__main__":
