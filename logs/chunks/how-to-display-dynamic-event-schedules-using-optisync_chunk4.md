@@ -1,0 +1,1 @@
+#### **Monthly:**example of a weekly event schedule created using optisync

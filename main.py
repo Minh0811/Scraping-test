@@ -1,8 +1,8 @@
 import os
-from utils import clear_folder
-from scrape import OptiScraper
-from chunker import OptiChunker
-from upload_to_openai import OptiUploader
+from app.utils import clear_folder
+from app.scrape import OptiScraper
+from app.chunker import OptiChunker
+from app.upload_to_openai import OptiUploader
 
 
 def main():
