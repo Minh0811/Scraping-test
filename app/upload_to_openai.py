@@ -60,7 +60,6 @@ class OptiUploader:
 
     def delete_all_openai_files(self):    
         # Deletes all files from the OpenAI account.
-
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
         files = openai.files.list().data
